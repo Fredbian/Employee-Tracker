@@ -1,5 +1,5 @@
 {
-  "name": "monu-fsf-module-12-challenge-employee-tracker-",
+  "name": "monu-fsf-module-12-challenge-employee-tracker",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -8,15 +8,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Fredbian/MONU-FSF-Module-12-Challenge-Employee-Tracker-.git"
+    "url": "https://github.com/Fredbian/MONU-FSF-Module-12-Challenge-Employee-Tracker"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/Fredbian/MONU-FSF-Module-12-Challenge-Employee-Tracker-/issues"
+    "url": "https://github.com/Fredbian/MONU-FSF-Module-12-Challenge-Employee-Tracker/issues"
   },
-  "homepage": "https://github.com/Fredbian/MONU-FSF-Module-12-Challenge-Employee-Tracker-#readme",
+  "homepage": "https://github.com/Fredbian/MONU-FSF-Module-12-Challenge-Employee-Tracker/blob/main/README.md",
   "dependencies": {
     "console.table": "^0.10.0",
     "inquirer": "^8.2.4",
