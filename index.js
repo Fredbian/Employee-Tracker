@@ -63,6 +63,7 @@ const startApp = () => {
         })
 }
 
+
 // view all department fn
 const viewAllDepartments = () => {
     // SELECT from department
@@ -77,6 +78,7 @@ const viewAllDepartments = () => {
         startApp()
     })
 }
+
 
 // view all roles fn
 const viewAllRoles = () => {
@@ -93,6 +95,7 @@ const viewAllRoles = () => {
     })
 }
 
+
 // view all employees fn
 const viewAllEmployees = () => {
     // SELECT from employee
@@ -108,6 +111,7 @@ const viewAllEmployees = () => {
     })
 }
 
+
 // create new depart fn 
 const createDepartment = () => {
     // ask question, input new dpt name
@@ -118,23 +122,93 @@ const createDepartment = () => {
             message: 'Please enter the new department name'
         }
     ])
-    .then(answer => {
-        const newDepartmentName = answer.newDepartmentName
-        // INSERT new dpt into department table
-        connection.query('INSERT INTO department (name) VALUES (?)', [newDepartmentName], (err, res) => {
-            // if err, print err
-            if (err) return console.log(err.message)
+        .then(answer => {
+            // INSERT new dpt into department table
+            const newDepartmentName = answer.newDepartmentName
+            const query = 'INSERT INTO department (name) VALUES (?)'
+            connection.query(query, [newDepartmentName], (err, res) => {
+                // if err, print err
+                if (err) return console.log(err.message)
+                // if no err, print message 
+                console.log(`\nDepartment ${newDepartmentName} has been added successfully!\n`)
+            })
+            // call viewAllDepartments(), print dpt table and back to start
+            viewAllDepartments()
         })
-        // if no err, print dpt table and back to start
-        viewAllDepartments()
+}
+
+
+
+// -------------------------------------
+// fn for creating department array
+const getDepartmentsArray = () => {
+    let departments = []
+    const query = 'SELECT name FROM department'
+    connection.query(query, (err, res) => {
+        // if err, print err
+        if (err) return console.log(err.message)
+        // if not, create department array
+        res.forEach(data => departments.push(data.name))
     })
 }
 
 // create new role fn
 const createRole = () => {
     // ask new role name, salary, department
-    
+    inquirer.prompt([
+        {
+            type: 'input',
+            name: 'newRoleTitle',
+            message: 'Please enter title for this new role',
+        },
+        {
+            type: 'input',
+            name: 'newRoleSalary',
+            message: 'Please enter salary for this new role'
+        },
+        {
+            type: 'list',
+            name: 'newRoleDepartment',
+            message: 'Please enter department for this new role',
+            // call getDepartmentArray to get choices
+            choices: getDepartmentsArray()
+        }
+    ])
+        .then(answer => {
+            // SELECT get id by department name
+            let departmentID = 0
+            const newRoleDepartment = answer.newRoleDepartment
+            const query = 'SELECT id FROM department WHERE name = ?'
+            connection.query(query, [newRoleDepartment], (err, res) => {
+                // if err, print err
+                if (err) return console.log(err.message)
+                // if not, get id
+                res.forEach(id => departmentID = id.id)
+
+                // INSERT role by depart id
+                const newRole = {
+                    title: answer.newRoleTitle,
+                    salary: answer.salary,
+                    department_id: departmentID
+                }
+                const query = 'INSERT INTO role SET ?'
+                connection.query(query, newRole, (err, res) => {
+                    // if err, print err
+                    if (err) return console.log(err.message)
+                    // if no err, print message
+                    console.log(`\nNew Role ${answer.newRoleTitle} has been added successfully!\n`)
+                })
+                // call viewAllRoles(), print roles table and back to start
+                viewAllRoles()
+            })
+        })
 }
+// ------------------------------------------
+
+
 
 createEmployee()
 updateEmployeeRole()
+
+
+
