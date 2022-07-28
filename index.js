@@ -12,16 +12,16 @@ connection.connect((err) => {
     startApp()
 })
 
-// prepare inquirer questions
-const startQuestions = [{
-    type: 'list',
-    name: 'startQuestions',
-    message: 'Please select what would you like to do?',
-    choices: ['View All Departments', 'View All Roles', 'View All Employees', 'Add a Department', 'Add a Role', 'Add an Employee', 'Update an Employee Role', 'Exit Application']
-}]
 
 // start App
 const startApp = () => {
+    // prepare inquirer questions
+    const startQuestions = [{
+        type: 'list',
+        name: 'startQuestions',
+        message: 'Please select what would you like to do?',
+        choices: ['View All Departments', 'View All Roles', 'View All Employees', 'Add a Department', 'Add a Role', 'Add an Employee', 'Update an Employee Role', 'Exit Application']
+    }]
     // ask questions
     inquirer.prompt(startQuestions)
         // run functions based on user input
@@ -41,15 +41,15 @@ const startApp = () => {
                     break
                 // if add depart, run add depart fn
                 case 'Add a Department':
-                    createDepartment()
+                    createNewDepartment()
                     break
                 // if add role, run add role
                 case 'Add a Role':
-                    createRole()
+                    createNewRole()
                     break
                 // if add employee, run add employee fn
                 case 'Add an Employee':
-                    createEmployee()
+                    createNewEmployee()
                     break
                 // if update employee role, fun update fn
                 case 'Update an Employee Role':
@@ -113,7 +113,7 @@ const viewAllEmployees = () => {
 
 
 // create new depart fn 
-const createDepartment = () => {
+const createNewDepartment = () => {
     // ask question, input new dpt name
     inquirer.prompt([
         {
@@ -140,22 +140,24 @@ const createDepartment = () => {
 
 
 // -------------------------------------
-// fn for creating department array
-const getDepartmentsArray = () => {
-    let departments = []
+// SELECT fn for creating department array
+const createDepartmentsArray = () => {
+    let departmentsArray = []
     const query = 'SELECT name FROM department'
     connection.query(query, (err, res) => {
         // if err, print err
         if (err) return console.log(err.message)
         // if not, create department array
-        res.forEach(data => departments.push(data.name))
+        res.forEach(data => departmentsArray.push(data.name))
     })
+    // return department array
+    return departmentsArray
 }
 
 // create new role fn
-const createRole = () => {
+const createNewRole = () => {
     // ask new role name, salary, department
-    inquirer.prompt([
+    const newRoleQuestions = [
         {
             type: 'input',
             name: 'newRoleTitle',
@@ -171,15 +173,17 @@ const createRole = () => {
             name: 'newRoleDepartment',
             message: 'Please enter department for this new role',
             // call getDepartmentArray to get choices
-            choices: getDepartmentsArray()
+            choices: createDepartmentsArray()
         }
-    ])
+    ]
+
+    inquirer.prompt(newRoleQuestions)
         .then(answer => {
             // SELECT get id by department name
             let departmentID = 0
             const newRoleDepartment = answer.newRoleDepartment
             const query = 'SELECT id FROM department WHERE name = ?'
-            connection.query(query, [newRoleDepartment], (err, res) => {
+            connection.query(query, newRoleDepartment, (err, res) => {
                 // if err, print err
                 if (err) return console.log(err.message)
                 // if not, get id
@@ -206,8 +210,141 @@ const createRole = () => {
 // ------------------------------------------
 
 
+// ---------------------------------------
+// SELECT create role array
+const createRoleArray = () => {
+    let rolesArray = []
+    const query = 'SELECT name FROM role'
+    connection.query(query, (err, res) => {
+        // if err, print err
+        if (err) return console.log(err.message)
+        // if not, create department array
+        res.forEach(data => rolesArray.push(data.title))
+    })
+    // return role array
+    return rolesArray
+}
 
-createEmployee()
+// SELECT create employee array for choose manager
+const createEmployeeArray = () => {
+    let firstNameArray = []
+    let lastNameArray = []
+    let employeesArray = []
+
+    const firstNameQuery = 'SELECT first_name FROM employee'
+    connection.query(firstNameQuery, (err, res) => {
+        // if err, print err
+        if (err) return console.log(err.message)
+        // if not, create first name array
+        res.forEach(data => firstNameArray.push(data.first_name))
+
+        const lastNameQuery = 'SELECT last_name FROM employee'
+        connection.query(lastNameQuery, (err, res) => {
+            // if err, print err
+            if (err) return console.log(err.message)
+            // if not, create last name array
+            res.forEach(data => lastNameArray.push(data.last_name))
+        })
+
+        // loop two arrays and join to get employee array
+        for (let i = 0; i < firstNameArray.length; i++) {
+            let employee = `${firstNameArray[i]} ${lastNameArray[i]}`
+            employeesArray.push(employee)
+        }
+    })
+    // return employee array
+    return employeesArray
+}
+
+
+const createNewEmployee = () => {
+    // prepare new employee questions
+    const newEmployeeQuestions = [
+        {
+            type: 'input',
+            name: 'firstName',
+            message: 'Please enter first name for the new employee',
+        },
+        {
+            type: 'input',
+            name: 'lastName',
+            message: 'Please enter last name for the new employee'
+        },
+        {
+            type: 'list',
+            name: 'role',
+            message: 'Please select role for the new employee',
+            // call createRoleArray to get all roles
+            choices: createRoleArray()
+        },
+        {
+            type: 'list',
+            name: 'manager',
+            message: 'Please select manager for the new employee',
+            // call createEmployeeArray to get all employees for manager
+            choices: createEmployeeArray()
+        }
+    ]
+
+    inquirer.prompt(newEmployeeQuestions)
+        .then(answer => {
+            let roleID = 0
+            let managerID = 0
+
+            //get roleID by name
+            const query = 'SELECT id FROM role WHERE title = ?'
+            connection.query(query, answer.role, (err, res) => {
+                // if err, print err
+                if (err) return console.log(err.message)
+                // if not, get role id
+                res.forEach(id => roleID = id.id)
+
+                let managerName = ''
+                // get manager name from answer
+                for (let i = 0; i < answer.manager.length; i++) {
+                    if (answer.manager === '') return console.log('No manager found!')
+                    managerName += answer.manager.charAt(i)
+                }
+
+                // SELECT get manager id from manager name
+                const query = 'SELECT id FROM employee WHERE firts_name = ?'
+                connection.query(query, managerName, (err, res) => {
+                    // if err, print err
+                    if (err) return console.log(err.message)
+                    // if not, get manager id
+                    res.forEach(id => managerID = id.id)
+
+
+                    // INSERT new employee into table
+                    const newEmployee = {
+                        first_name: answer.firstName,
+                        last_name: answer.lastName,
+                        role_id: roleID,
+                        manager_id: managerID
+                    }
+
+                    const insertQuery = 'INSERT INTO employee SET ?'
+
+                    connection.query(insertQuery, newEmployee, (err, res) => {
+                        // if err, print err
+                        if (err) return console.log(err.message)
+                        // if no err, print message
+                        console.log(`\nNew Employee has been added successfully!\n`)
+                    })
+
+                    viewAllEmployees()
+                })
+
+            })
+        })
+}
+//---------------------
+
+
+
+
+
+//---------------------------
 updateEmployeeRole()
 
 
