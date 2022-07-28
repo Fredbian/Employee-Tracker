@@ -329,7 +329,7 @@ const createNewEmployee = () => {
                         // if err, print err
                         if (err) return console.log(err.message)
                         // if no err, print message
-                        console.log(`\nNew Employee has been added successfully!\n`)
+                        console.log(`\nNew Employee ${answer.firstName} ${answer.lastName} has been added successfully!\n`)
                     })
 
                     viewAllEmployees()
@@ -345,7 +345,36 @@ const createNewEmployee = () => {
 
 
 //---------------------------
-updateEmployeeRole()
+// fun for update employee role
+const updateEmployeeRole = () => {
+    // prepare questions
+    const questions = [
+        {
+            type: 'number',
+            name: 'employeeID',
+            message: 'Please enter employee ID to update'
+        },
+        {
+            type: 'number',
+            name: 'roleID',
+            message: 'Please enter the role ID you wish to update to'
+        }
+    ]
+    // ask questions
+    inquirer.prompt(questions)
+        .then(answer => {
+            // UPDATE employee's role by id
+            const query = 'UPDATE employee SET role_id = ? WHERE id = ?'
+            connection.query(query, [answer.roleID, answer.employeeID], (err, res) => {
+                // if err, print err
+                if (err) return console.log(err.message)
+                // if no err, print message
+                console.log(`\nEmployee's role has been updated successfully!\n`)
+                viewAllEmployees()
+            })
+        })
+
+}
 
 
 
