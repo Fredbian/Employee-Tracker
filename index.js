@@ -20,7 +20,7 @@ const startApp = () => {
         type: 'list',
         name: 'startQuestions',
         message: 'Please select what would you like to do?',
-        choices: ['View All Departments', 'View All Roles', 'View All Employees', 'View Employees by Department','View Employees by Manager', 'Add a Department', 'Add a Role', 'Add an Employee', 'Update an Employee Role', 'Exit Application']
+        choices: ['View All Departments', 'View All Roles', 'View All Employees', 'View Employees by Department','View Employees by Manager', 'Add a Department', 'Add a Role', 'Add an Employee', 'Update an Employee Role', 'Delete Department', 'Delete Role', 'Delete Employee', 'Exit Application']
     }]
     // ask questions
     inquirer.prompt(startQuestions)
@@ -47,6 +47,18 @@ const startApp = () => {
                 case 'View Employees by Manager':
                     viewEmployeesByManager()
                     break
+                // -- if delete department, run delete department func
+                case 'Delete Department':
+                    deleteDepartment()
+                    break    
+                // -- if delete role, run delete role func
+                case 'Delete Role':
+                    deleteRole()
+                    break
+                // -- if delete employee, run delete employee func
+                case 'Delete Employee':
+                    deleteEmployee()
+                    break                        
                 // if add depart, run add depart fn
                 case 'Add a Department':
                     createNewDepartment()
@@ -192,8 +204,8 @@ const viewEmployeesByManager = () => {
     
     
     
-    // create new depart fn 
-    const createNewDepartment = () => {
+// create new depart fn 
+const createNewDepartment = () => {
         // ask question, input new dpt name
         inquirer.prompt([
             {
@@ -215,12 +227,12 @@ const viewEmployeesByManager = () => {
             // call viewAllDepartments(), print dpt table and back to start
             viewAllDepartments()
         })
-    }
+}
     
     
     
-    // -------------------------------------
-    // SELECT fn for creating department array
+// -------------------------------------
+// SELECT fn for creating department array
     const createDepartmentsArray = () => {
         let departmentsArray = []
         const query = 'SELECT name FROM department'
@@ -417,7 +429,7 @@ const createNewEmployee = () => {
                 
             })
         })
-    }
+}
     //---------------------
     
     
@@ -455,6 +467,90 @@ const createNewEmployee = () => {
     })
     
 }
+
+
+// -------------Delete Department------------------
+const deleteDepartment = () => {
+    inquirer.prompt([
+        {
+            type: 'input',
+            name: 'deleteDepartmentID',
+            message: 'Please enter departmentID you wish to delete'
+        }
+    ])
+    .then(answer => {
+        const query = 'DELETE FROM department WHERE id = ?'
+        connection.query(query, answer.deleteDepartmentID, (err, res) => {
+            // if err, print err
+            if (err) return console.log(err.message)
+            // if no err, print message
+            console.log(`\nDepartment has been deleted successfully!`)
+            viewAllDepartments()
+            })
+           startApp() 
+        })
+}
+
+
+// ----------------Delete role-------------
+const deleteRole = () => {
+    inquirer.prompt([
+        {
+            type: 'input',
+            name: 'deleteRoleID',
+            message: 'Please enter roleID you wish to delete'
+        }
+    ])
+    .then(answer => {
+        const query = 'DELETE FROM role WHERE id = ?'
+        connection.query(query, answer.deleteRoleID, (err, res) => {
+            // if err, print err
+            if (err) return console.log(err.message)
+            // if no err, print message
+            console.log(`\nDepartment has been deleted successfully!`)
+            viewAllRoles()
+            })
+           startApp() 
+        })
+}
+
+// ----------------Delete employee-------------
+const deleteEmployee = () => {
+    inquirer.prompt([
+        {
+            type: 'input',
+            name: 'deleteEmployeeID',
+            message: 'Please enter employeeID you wish to delete'
+        }
+    ])
+    .then(answer => {
+        const query = 'DELETE FROM employee WHERE id = ?'
+        connection.query(query, answer.deleteEmployeeID, (err, res) => {
+            // if err, print err
+            if (err) return console.log(err.message)
+            // if no err, print message
+            console.log(`\nDepartment has been deleted successfully!`)
+            viewAllEmployees()
+            })
+           startApp() 
+        })
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
