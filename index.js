@@ -198,7 +198,7 @@ const viewEmployeesByManager = () => {
                 startApp()
             })
         })
-    }
+}
     
     
     
@@ -298,16 +298,16 @@ const createNewRole = () => {
                 viewAllRoles()
             })
         })
-    }
-    // ------------------------------------------
+}
+// ------------------------------------------
     
     
-    // ---------------------------------------
-    // SELECT create role array
-    const createRoleArray = () => {
-        let rolesArray = []
-        const query = 'SELECT title FROM role'
-        connection.query(query, (err, res) => {
+// ---------------------------------------
+// SELECT create role array
+const createRoleArray = () => {
+    let rolesArray = []
+    const query = 'SELECT title FROM role'
+    connection.query(query, (err, res) => {
             // if err, print err
             if (err) return console.log(err.message)
             // if not, create department array
@@ -317,32 +317,28 @@ const createNewRole = () => {
         return rolesArray
     }
     
-    // SELECT create employee array for choose manager
-    const createEmployeeArray = () => {
-        let firstNameArray = []
-        let lastNameArray = []
-    let employeesArray = []
-    
-    const firstNameQuery = 'SELECT first_name FROM employee'
-    connection.query(firstNameQuery, (err, res) => {
+// SELECT create employee array for choose manager
+const createEmployeeArray = () => {
+    let firstNameArray = [];
+    let lastNameArray = [];
+    let employeesArray = [];
+
+    connection.query('SELECT first_name FROM employee', (err, res) => {
         // if err, print err
         if (err) return console.log(err.message)
         // if not, create first name array
-        res.forEach(data => firstNameArray.push(data.first_name))
-        
-        const lastNameQuery = 'SELECT last_name FROM employee'
-        connection.query(lastNameQuery, (err, res) => {
+        res.forEach(first_name => firstNameArray.push(first_name.first_name))
+
+        connection.query('SELECT last_name FROM employee', (err, res) => {
             // if err, print err
             if (err) return console.log(err.message)
             // if not, create last name array
-            res.forEach(data => lastNameArray.push(data.last_name))
+            res.forEach(last_name => lastNameArray.push(last_name.last_name))
+            // loop two arrays and join to get employee array
+            for (let i = 0; i < firstNameArray.length; i++) {
+                employeesArray[i] = `${firstNameArray[i]} ${lastNameArray[i]}`
+            }
         })
-        
-        // loop two arrays and join to get employee array
-        for (let i = 0; i < firstNameArray.length; i++) {
-            let employee = `${firstNameArray[i]} ${lastNameArray[i]}`
-            employeesArray.push(employee)
-        }
     })
     // return employee array
     return employeesArray
@@ -391,16 +387,13 @@ const createNewEmployee = () => {
                 // if not, get role id
                 res.forEach(id => roleID = id.id)
                 
-                let managerName = ''
-                // get manager name from answer
-                for (let i = 0; i < answer.manager.length; i++) {
-                    if (answer.manager === '') return console.log('No manager found!')
-                    managerName += answer.manager.charAt(i)
-                }
+                // get manager first name from answer
+                let managerFirstName = ''
+                managerFirstName = answer.manager.split(' ')[0]
                 
                 // SELECT get manager id from manager name
                 const query = 'SELECT id FROM employee WHERE first_name = ?'
-                connection.query(query, managerName, (err, res) => {
+                connection.query(query, managerFirstName, (err, res) => {
                     // if err, print err
                     if (err) return console.log(err.message)
                     // if not, get manager id
@@ -430,16 +423,17 @@ const createNewEmployee = () => {
             })
         })
 }
-    //---------------------
+
+//---------------------
     
     
     
     
     
-    //---------------------------
-    // fun for update employee role
-    const updateEmployeeRole = () => {
-        // prepare questions
+//---------------------------
+// fun for update employee role
+const updateEmployeeRole = () => {
+    // prepare questions
         const questions = [
             {
                 type: 'number',

@@ -4,34 +4,22 @@ CREATE DATABASE db_12;
 
 USE db_12;
 
-DROP TABLE IF EXISTS department;
-
 -- create dpt table
 CREATE TABLE department (
     id INT NOT NULL AUTO_INCREMENT,
-    `name` VARCHAR (30) NULL,
+    name VARCHAR (30) NULL,
     PRIMARY KEY (id)
-)
-;
-INSERT INTO 
-    department (name)
-VALUES
-    ('Sales'),
-    ('Marketing'),
-    ('Customer Service'),
-    ('R & D'),
-    ('Human Resource')
-   -- for testing ('Accounting')
-;
+);
+
+
 -- create role table
 CREATE TABLE role (
   id INT AUTO_INCREMENT NOT NULL,
   title VARCHAR(30) NOT NULL,
-  salary DECIMAL NOT NULL,
+  salary DECIMAL(10,2) NOT NULL,
   department_id INT NOT NULL,
   PRIMARY KEY(id)
-)
-;
+);
 
 -- create employee table
 CREATE TABLE employee (
@@ -41,5 +29,5 @@ CREATE TABLE employee (
   role_id INT NULL,
   manager_id INT NULL,
   PRIMARY KEY (id)
-)
-;
+);
+

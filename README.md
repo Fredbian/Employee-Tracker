@@ -38,4 +38,4 @@ npm i
 
 ## URLs
 * Github: https://github.com/Fredbian/MONU-FSF-Module-12-Challenge-Employee-Tracker 
-* Deployed Link: 
+* Deployed Link: https://drive.google.com/file/d/1vkspyv_u2nP4HbuIA7tnCzJihxqaNm9g/view 
