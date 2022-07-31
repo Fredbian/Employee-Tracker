@@ -200,10 +200,7 @@ const viewEmployeesByManager = () => {
         })
 }
     
-    
-    
-    
-    
+      
 // create new depart fn 
 const createNewDepartment = () => {
         // ask question, input new dpt name
@@ -428,8 +425,6 @@ const createNewEmployee = () => {
     
     
     
-    
-    
 //---------------------------
 // fun for update employee role
 const updateEmployeeRole = () => {
@@ -481,7 +476,7 @@ const deleteDepartment = () => {
             console.log(`\nDepartment has been deleted successfully!`)
             viewAllDepartments()
             })
-           startApp() 
+           
         })
 }
 
@@ -504,7 +499,7 @@ const deleteRole = () => {
             console.log(`\nDepartment has been deleted successfully!`)
             viewAllRoles()
             })
-           startApp() 
+           
         })
 }
 
@@ -526,7 +521,7 @@ const deleteEmployee = () => {
             console.log(`\nDepartment has been deleted successfully!`)
             viewAllEmployees()
             })
-           startApp() 
+    
         })
 }
 
