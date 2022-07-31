@@ -83,7 +83,11 @@ const viewAllDepartments = () => {
 // view all roles fn
 const viewAllRoles = () => {
     // SELECT from role
-    const query = 'SELECT * FROM role'
+    // const query = `SELECT * FROM role`
+    const query = `SELECT role.id, role.title, department.name AS department, CONCAT('$', role.salary) AS salary 
+    FROM role
+    LEFT JOIN department ON role.department_id = department.id
+    `
     connection.query(query, (err, res) => {
         // if err, print err
         if (err) return console.log(err.message)
@@ -99,7 +103,14 @@ const viewAllRoles = () => {
 // view all employees fn
 const viewAllEmployees = () => {
     // SELECT from employee
-    const query = 'SELECT * FROM employee'
+    // const query1 = `SELECT * FROM employee`
+    const query = `SELECT employee.id, employee.first_name, employee.last_name, role.title, department.name AS department, CONCAT('$', role.salary) AS salary, CONCAT(manager.first_name, ' ', manager.last_name) AS manager 
+    FROM employee 
+    LEFT JOIN role ON employee.role_id = role.id 
+    LEFT JOIN department ON role.department_id = department.id 
+    LEFT JOIN employee manager ON manager.id = employee.manager_id`
+    //where manager.id = ?`
+
     connection.query(query, (err, res) => {
         // if err, print err
         if (err) return console.log(err.message)
@@ -111,6 +122,16 @@ const viewAllEmployees = () => {
     })
 }
 
+/**
+ * sql
+ * select ...
+ * from ... 
+ *   join
+ * where
+ * group by 
+ * order by
+ * 
+ */
 
 // create new depart fn 
 const createNewDepartment = () => {
@@ -130,7 +151,7 @@ const createNewDepartment = () => {
                 // if err, print err
                 if (err) return console.log(err.message)
                 // if no err, print message 
-                console.log(`\nDepartment ${newDepartmentName} has been added successfully!\n`)
+                return console.log(`\nDepartment ${newDepartmentName} has been added successfully!\n`)
             })
             // call viewAllDepartments(), print dpt table and back to start
             viewAllDepartments()
@@ -171,7 +192,7 @@ const createNewRole = () => {
         {
             type: 'list',
             name: 'newRoleDepartment',
-            message: 'Please enter department for this new role',
+            message: 'Please select department for this new role',
             // call getDepartmentArray to get choices
             choices: createDepartmentsArray()
         }
@@ -192,7 +213,7 @@ const createNewRole = () => {
                 // INSERT role by depart id
                 const newRole = {
                     title: answer.newRoleTitle,
-                    salary: answer.salary,
+                    salary: answer.newRoleSalary,
                     department_id: departmentID
                 }
                 const query = 'INSERT INTO role SET ?'
@@ -200,7 +221,7 @@ const createNewRole = () => {
                     // if err, print err
                     if (err) return console.log(err.message)
                     // if no err, print message
-                    console.log(`\nNew Role ${answer.newRoleTitle} has been added successfully!\n`)
+                    return console.log(`\nNew Role ${answer.newRoleTitle} has been added successfully!\n`)
                 })
                 // call viewAllRoles(), print roles table and back to start
                 viewAllRoles()
@@ -214,7 +235,7 @@ const createNewRole = () => {
 // SELECT create role array
 const createRoleArray = () => {
     let rolesArray = []
-    const query = 'SELECT name FROM role'
+    const query = 'SELECT title FROM role'
     connection.query(query, (err, res) => {
         // if err, print err
         if (err) return console.log(err.message)
@@ -307,7 +328,7 @@ const createNewEmployee = () => {
                 }
 
                 // SELECT get manager id from manager name
-                const query = 'SELECT id FROM employee WHERE firts_name = ?'
+                const query = 'SELECT id FROM employee WHERE first_name = ?'
                 connection.query(query, managerName, (err, res) => {
                     // if err, print err
                     if (err) return console.log(err.message)
@@ -329,7 +350,7 @@ const createNewEmployee = () => {
                         // if err, print err
                         if (err) return console.log(err.message)
                         // if no err, print message
-                        console.log(`\nNew Employee ${answer.firstName} ${answer.lastName} has been added successfully!\n`)
+                        return console.log(`\nNew Employee ${answer.firstName} ${answer.lastName} has been added successfully!\n`)
                     })
 
                     viewAllEmployees()
